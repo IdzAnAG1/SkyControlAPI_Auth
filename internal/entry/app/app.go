@@ -54,7 +54,6 @@ func (app *App) Run() error {
 		}
 
 		app.logger.Error("closing tcp listener is failed", "error", err)
-		return
 	}()
 
 	// todo
