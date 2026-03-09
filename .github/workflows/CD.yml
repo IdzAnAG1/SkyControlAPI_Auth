@@ -5,7 +5,7 @@ on:
 
 jobs:
   deployment:
-    runs-on: [self-hosted, yominokana]
+    runs-on: self-hosted
     steps:
       - uses: actions/checkout@v4
 
