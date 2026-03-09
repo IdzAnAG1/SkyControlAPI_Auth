@@ -5,8 +5,12 @@ import (
 )
 
 func main() {
-	a := app.NewApp(9060)
-	err := a.Run()
+	a, err := app.NewApp()
+	if err != nil {
+		panic(err)
+	}
+
+	err = a.Run()
 	if err != nil {
 		panic(err)
 	}

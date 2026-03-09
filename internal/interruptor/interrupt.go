@@ -1,7 +1,7 @@
 package interruptor
 
 import (
-	"fmt"
+	"log/slog"
 	"os"
 	"os/signal"
 	"syscall"
@@ -12,29 +12,31 @@ import (
 type Interruptor struct {
 	gRPCInterruptor *grpc.Server
 	signal          chan os.Signal
+	logger          *slog.Logger
 }
 
-func NewInterruptor(srv *grpc.Server) *Interruptor {
+func NewInterruptor(srv *grpc.Server, logger *slog.Logger) *Interruptor {
 	return &Interruptor{
 		srv,
 		make(chan os.Signal, 1),
+		logger,
 	}
 }
 
-func (i *Interruptor) Run() (err error) {
+func (i *Interruptor) Run() {
 	i.startCatchingSignal()
 	go func() {
 		i.shutdown()
 	}()
-	return nil
 }
 
 func (i *Interruptor) startCatchingSignal() {
+	i.logger.Info("Starting signal catching")
 	signal.Notify(i.signal, syscall.SIGTERM, syscall.SIGINT)
 }
 
 func (i *Interruptor) shutdown() {
 	<-i.signal
-	fmt.Println("\nServer is shutting down gracefully...")
+	i.logger.Info("Server is shutting down gracefully...")
 	i.gRPCInterruptor.GracefulStop()
 }
