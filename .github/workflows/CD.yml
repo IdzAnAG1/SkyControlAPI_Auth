@@ -1,0 +1,26 @@
+name: CD
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  deployment:
+    runs-on: [self-hosted, yominokana]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Drop oldest container
+        run: docker rm -f scauth-container || true
+
+      - name: Build Container
+        run: docker build -t scauth-container .
+
+      - name:  Create .env file
+        run: echo "${{secrets.ENV}}" > sc_auth.env
+
+      - name: Run Container
+        run: docker run -d --env-file sc_auth.env --name scauth-container scauth-container
+
+      - name: Remove .env file
+        if: always()
+        run: rm sc_auth.env
