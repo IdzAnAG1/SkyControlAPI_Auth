@@ -6,7 +6,7 @@ COPY . /app
 
 WORKDIR /app
 
-RUN GOOS="linux" GOARCH="arm64" go build -o scAuth ./cmd/main/main.go
+RUN GOOS="linux" GOARCH="arm64" CGO_ENABLED=0 go build -o scAuth ./cmd/main/main.go
 
 FROM --platform=linux/arm64 alpine
 
