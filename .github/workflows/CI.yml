@@ -31,3 +31,15 @@ jobs:
           go-version: stable
       - name: test
         run: go test -v ./...
+  build:
+    needs: [golangci, gotest]
+    name: building the binary
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - name: docker build
+        run: docker build -t ${{ secrets.DOCKER_LOGIN }}/scauth:latest .
+      - name: docker login
+        run: echo ${{ secrets.DOCKER_AT }} | docker login -u ${{ secrets.DOCKER_LOGIN }} --password-stdin
+      - name: docker push
+        run: docker push ${{ secrets.DOCKER_LOGIN }}/scauth:latest

@@ -24,7 +24,7 @@ type App struct {
 }
 
 func NewApp() (*App, error) {
-	cfg, err := config.LoadAndGetConfig("sc_auth.env")
+	cfg, err := config.LoadAndGetConfig("~/sc_auth.env")
 	if err != nil {
 		return nil, err
 	}
