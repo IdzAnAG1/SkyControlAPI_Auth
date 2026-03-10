@@ -20,7 +20,7 @@ jobs:
         run: cp $HOME/.env $HOME/sc_auth.env
 
       - name: Download docker-compose.yml
-        run: curl -o ${HOME}/docker-compose.yml https://raw.githubusercontent.com/IdzAnAG1/SkyControlAPI_Auth/main/docker-compose.yml
+        run: curl -o ${HOME}/docker-compose.yml https://raw.githubusercontent.com/IdzAnAG1/SkyControlAPI_Auth/refs/heads/main/docker-compose.yaml
 
       - name: Drop oldest container
         run: docker compose -f $HOME/docker-compose.yml down
