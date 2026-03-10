@@ -23,3 +23,5 @@ services:
         condition: service_healthy
     env_file:
       - $HOME/.env
+    ports:
+      - ${EXTERNAL_PORT}:${APP_CONTAINER_PORT}
