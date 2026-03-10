@@ -9,11 +9,12 @@ jobs:
     steps:
       - name: Docker login
         run: echo ${{ secrets.DOCKER_AT }} | docker login -u ${{ secrets.DOCKER_LOGIN }} --password-stdin
+
       - name: Docker Pull
         run: docker pull ${{secrets.DOCKER_LOGIN}}/scauth:latest
 
       - name: Drop oldest container
-        run: docker rm -f scauth-container || true
+        run: docker rm -f scauth || true
 
       - name:  Create .env file
         run: echo "${{secrets.ENV}}" > $HOME/sc_auth.env
