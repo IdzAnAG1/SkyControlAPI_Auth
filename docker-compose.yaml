@@ -22,4 +22,4 @@ services:
       postgres:
         condition: service_healthy
     env_file:
-      - ${HOME}/.env
+      - /home/oda/.env
