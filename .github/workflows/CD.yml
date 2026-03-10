@@ -16,11 +16,11 @@ jobs:
         run: docker rm -f scauth-container || true
 
       - name:  Create .env file
-        run: echo "${{secrets.ENV}}" > ~/sc_auth.env
+        run: echo "${{secrets.ENV}}" > $HOME/sc_auth.env
 
       - name: Run Container
-        run: docker run -d --env-file ~/sc_auth.env --name sc-auth ${{secrets.DOCKER_LOGIN}}/scauth:latest
+        run: docker run -d --env-file $HOME/sc_auth.env --name sc-auth ${{secrets.DOCKER_LOGIN}}/scauth:latest
 
       - name: Remove .env file
         if: always()
-        run: rm ~/sc_auth.env
+        run: rm $HOME/sc_auth.env
