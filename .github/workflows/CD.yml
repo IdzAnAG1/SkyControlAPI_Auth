@@ -23,7 +23,7 @@ jobs:
         run: echo "${{secrets.ENV}}" > $HOME/sc_auth.env
 
       - name: Run Container
-        run: docker run -d --env-file $HOME/sc_auth.env --name sc-auth ${{secrets.DOCKER_LOGIN}}/scauth:latest
+        run: docker run -d --env-file $HOME/sc_auth.env -p ${{secrets.PORT_FOR_EXTERNAL}}:${{secrets.PORT_IN_DOCKER}} --name sc-auth ${{secrets.DOCKER_LOGIN}}/scauth:latest
 
       - name: Remove .env file
         if: always()
