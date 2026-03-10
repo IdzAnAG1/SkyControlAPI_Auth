@@ -17,7 +17,7 @@ jobs:
         run: docker pull ${{secrets.DOCKER_LOGIN}}/scauth:latest
 
       - name: Drop oldest container
-        run: docker rm -f scauth || true
+        run: docker rm -f sc-auth || true
 
       - name:  Create .env file
         run: echo "${{secrets.ENV}}" > $HOME/sc_auth.env
