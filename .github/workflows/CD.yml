@@ -27,7 +27,3 @@ jobs:
 
       - name: Start newest container
         run: docker compose -f $HOME/docker-compose.yml up -d
-
-      - name: Remove .env file
-        if: always()
-        run: rm $HOME/sc_auth.env $HOME/.env
