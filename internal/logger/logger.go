@@ -5,10 +5,10 @@ import (
 	"os"
 )
 
-func New() *slog.Logger {
+func New(level int) *slog.Logger {
 	return slog.New(
 		slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{
-			Level:     slog.LevelInfo,
+			Level:     slog.Level(level),
 			AddSource: true,
 		}),
 	)

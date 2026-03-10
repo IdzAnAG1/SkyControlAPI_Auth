@@ -2,6 +2,7 @@ package config
 
 import (
 	"fmt"
+	"os"
 
 	"github.com/caarlos0/env/v11"
 	"github.com/joho/godotenv"
@@ -35,6 +36,10 @@ type RedisConfig struct {
 	Timeout  int    `env:"REDIS_TIMEOUT" envDefault:"5000"`
 	NoCA     int    `env:"REDIS_NUMBER_OF_CONNECTION_ATTEMPTS" envDefault:"5"`
 }
+
+type Logger struct {
+	Level int `env:"LOG_LEVEL" envDefault:"0"`
+}
 type Config struct {
 	// Configuration for Auth server
 	AuthServer AuthServerConfig
@@ -44,10 +49,12 @@ type Config struct {
 	Database DatabaseConfig
 	// Configuration for relation with Redis
 	Redis RedisConfig
+
+	Logger Logger
 }
 
-func LoadAndGetConfig(path string) (*Config, error) {
-	err := godotenv.Load(path)
+func LoadAndGetConfig() (*Config, error) {
+	err := godotenv.Load(os.Getenv("ENV_FILE"))
 	if err != nil {
 		fmt.Printf(
 			"Error loading env file: %v \n"+

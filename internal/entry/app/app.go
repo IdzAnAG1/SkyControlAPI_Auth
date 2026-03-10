@@ -24,18 +24,18 @@ type App struct {
 }
 
 func NewApp() (*App, error) {
-	cfg, err := config.LoadAndGetConfig("~/sc_auth.env")
+	cfg, err := config.LoadAndGetConfig()
 	if err != nil {
 		return nil, err
 	}
-
 	return &App{
 		tcpPort: cfg.AuthServer.Port,
-		logger:  logger.New(),
+		logger:  logger.New(cfg.Logger.Level),
 	}, nil
 }
 
 func (app *App) Run() error {
+	app.logger.Debug("Starting Auth Server with cfg", "cfg", app.tcpPort)
 	app.logger.Info("Starting Auth Server", "port", app.tcpPort)
 	// todo
 	tcp, err := net.Listen(
@@ -64,7 +64,9 @@ func (app *App) Run() error {
 	iter.Run()
 
 	// todo
-	authServ := server.GrpcAuthServer{}
+	authServ := server.GrpcAuthServer{
+		Logger: app.logger,
+	}
 	authv1.RegisterAuthServer(srv, &authServ)
 	app.logger.Info("auth server is registered")
 	err = srv.Serve(tcp)
