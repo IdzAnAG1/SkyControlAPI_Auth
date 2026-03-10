@@ -13,18 +13,21 @@ jobs:
       - name: Docker login
         run: echo ${{ secrets.DOCKER_AT }} | docker login -u ${{ secrets.DOCKER_LOGIN }} --password-stdin
 
-      - name: Docker Pull
-        run: docker pull ${{secrets.DOCKER_LOGIN}}/scauth:latest
+      - name: Create .env file
+        run: echo "${{secrets.ENV}}" > $HOME/.env
+
+      - name: cp .env file into sc_auth.env
+        run: cp $HOME/.env $HOME/sc_auth.env
+
+      - name: Download docker-compose.yml
+        run: curl -o ${HOME}/docker-compose.yml https://raw.githubusercontent.com/IdzAnAG1/SkyControlAPI_Auth/main/docker-compose.yml
 
       - name: Drop oldest container
-        run: docker rm -f sc-auth || true
+        run: docker compose -f $HOME/docker-compose.yml down
 
-      - name:  Create .env file
-        run: echo "${{secrets.ENV}}" > $HOME/sc_auth.env
-
-      - name: Run Container
-        run: docker run -d --env-file $HOME/sc_auth.env -p ${{secrets.PORT_FOR_EXTERNAL}}:${{secrets.PORT_IN_DOCKER}} --name sc-auth ${{secrets.DOCKER_LOGIN}}/scauth:latest
+      - name: Start newest container
+        run: docker compose -f $HOME/docker-compose.yml up -d
 
       - name: Remove .env file
         if: always()
-        run: rm $HOME/sc_auth.env
+        run: rm $HOME/sc_auth.env $HOME/.env
