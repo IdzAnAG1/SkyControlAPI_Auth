@@ -4,6 +4,7 @@ import (
 	"log/slog"
 	"os"
 	"os/signal"
+	"sc_auth/internal/db"
 	"syscall"
 
 	"google.golang.org/grpc"
@@ -13,13 +14,15 @@ type Interruptor struct {
 	gRPCInterruptor *grpc.Server
 	signal          chan os.Signal
 	logger          *slog.Logger
+	database        db.DB
 }
 
-func NewInterruptor(srv *grpc.Server, logger *slog.Logger) *Interruptor {
+func NewInterruptor(srv *grpc.Server, logger *slog.Logger, db db.DB) *Interruptor {
 	return &Interruptor{
 		srv,
 		make(chan os.Signal, 1),
 		logger,
+		db,
 	}
 }
 
@@ -39,4 +42,9 @@ func (i *Interruptor) shutdown() {
 	<-i.signal
 	i.logger.Info("Server is shutting down gracefully...")
 	i.gRPCInterruptor.GracefulStop()
+
+	err := i.database.Close()
+	if err != nil {
+		i.logger.Error("Error closing database", "error", err)
+	}
 }

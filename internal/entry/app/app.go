@@ -1,12 +1,14 @@
 package app
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"log/slog"
 	"net"
 	authv1 "sc_auth/generated/skycontrol/proto/auth/v1"
 	"sc_auth/internal/config"
+	"sc_auth/internal/db"
 	"sc_auth/internal/interruptor"
 	logger "sc_auth/internal/logger"
 	"sc_auth/internal/server"
@@ -21,6 +23,7 @@ import (
 type App struct {
 	tcpPort string
 	logger  *slog.Logger
+	db      db.DB
 }
 
 func NewApp() (*App, error) {
@@ -28,9 +31,25 @@ func NewApp() (*App, error) {
 	if err != nil {
 		return nil, err
 	}
+	database := db.NewDB(cfg.GetPostgresLink(), cfg.Database.NoCA, cfg.Database.Timeout)
+
+	if err = database.ConnectWithDB(); err != nil {
+		if database.Conn != nil {
+			if !database.Conn.IsClosed() {
+				err = database.Conn.Close(context.Background())
+				if err != nil {
+					return nil, err
+				}
+			}
+		}
+
+		return nil, err
+	}
+
 	return &App{
 		tcpPort: cfg.AuthServer.Port,
 		logger:  logger.New(cfg.Logger.Level),
+		db:      *database,
 	}, nil
 }
 
@@ -60,7 +79,7 @@ func (app *App) Run() error {
 	srv := grpc.NewServer()
 	app.logger.Info("grpc server is created")
 	// todo
-	iter := interruptor.NewInterruptor(srv, app.logger)
+	iter := interruptor.NewInterruptor(srv, app.logger, app.db)
 	iter.Run()
 
 	// todo

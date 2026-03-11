@@ -23,7 +23,7 @@ type DatabaseConfig struct {
 	Name     string `env:"AUTH_DATABASE_NAME" envDefault:"auth"`
 	User     string `env:"AUTH_DATABASE_USER" envDefault:"postgres"`
 	Password string `env:"AUTH_DATABASE_PASSWORD,required"`
-	Timeout  int    `env:"AUTH_DATABASE_TIMEOUT" envDefault:"5000"`
+	Timeout  int    `env:"AUTH_DATABASE_TIMEOUT" envDefault:"5"`
 	NoCA     int    `env:"AUTH_DATABASE_NUMBER_OF_CONNECTION_ATTEMPTS" envDefault:"5"`
 }
 
@@ -71,4 +71,14 @@ func LoadAndGetConfig() (*Config, error) {
 	}
 
 	return config, nil
+}
+
+func (cfg *Config) GetPostgresLink() string {
+	return fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=disable",
+		cfg.Database.User,
+		cfg.Database.Password,
+		cfg.Database.Host,
+		cfg.Database.Port,
+		cfg.Database.Name,
+	)
 }
