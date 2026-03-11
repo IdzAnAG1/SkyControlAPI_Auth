@@ -2,6 +2,7 @@ package db
 
 import (
 	"context"
+	"log/slog"
 	"time"
 
 	"github.com/jackc/pgx/v5"
@@ -12,13 +13,15 @@ type DB struct {
 	Conn    *pgx.Conn
 	NoCA    int
 	Timeout int
+	logger  *slog.Logger
 }
 
-func NewDB(pgUrl string, noca, tim int) *DB {
+func NewDB(pgUrl string, noca, tim int, log *slog.Logger) *DB {
 	return &DB{
 		pgUrl:   pgUrl,
 		NoCA:    noca,
 		Timeout: tim,
+		logger:  log,
 	}
 }
 
@@ -33,8 +36,10 @@ func (db *DB) ConnectWithDB() (err error) {
 		time.Sleep(5 * time.Second)
 	}
 	if err != nil {
+		db.logger.Error("failed to connect to db", "error", err)
 		return err
 	}
+	db.logger.Info("connected to db")
 	return nil
 }
 

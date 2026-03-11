@@ -31,7 +31,15 @@ func NewApp() (*App, error) {
 	if err != nil {
 		return nil, err
 	}
-	database := db.NewDB(cfg.GetPostgresLink(), cfg.Database.NoCA, cfg.Database.Timeout)
+	log := logger.New(cfg.Logger.Level)
+	log.Info("logger is created")
+
+	database := db.NewDB(
+		cfg.GetPostgresLink(),
+		cfg.Database.NoCA,
+		cfg.Database.Timeout,
+		log,
+	)
 
 	if err = database.ConnectWithDB(); err != nil {
 		if database.Conn != nil {
@@ -48,7 +56,7 @@ func NewApp() (*App, error) {
 
 	return &App{
 		tcpPort: cfg.AuthServer.Port,
-		logger:  logger.New(cfg.Logger.Level),
+		logger:  log,
 		db:      *database,
 	}, nil
 }
