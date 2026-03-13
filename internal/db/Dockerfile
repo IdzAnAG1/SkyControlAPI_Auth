@@ -1,4 +1,4 @@
-FROM --platform=linux/arm64 golang:latest as build
+FROM golang:latest as build
 
 RUN GOOS="linux" GOARCH="arm64" CGO_ENABLED=0 go install github.com/pressly/goose/v3/cmd/goose@latest
 
