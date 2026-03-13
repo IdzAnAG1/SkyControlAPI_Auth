@@ -10,8 +10,4 @@ COPY ./internal/db/migrations ./migrations
 
 ENV GOOSE_DRIVER=postgres
 
-RUN goose -dir ./migrations validate
-
-RUN goose -dir ./migrations fix
-
 CMD ["goose", "-dir", "./migrations", "up"]
