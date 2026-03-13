@@ -25,6 +25,9 @@ jobs:
       - name: Drop oldest container
         run: docker compose -f $HOME/docker-compose.yml down
 
+      - name: fetch new image
+        run : docker compose -f $HOME/docker-compose.yml pull
+
       - name: up postrges container
         run: docker compose -f $HOME/docker-compose.yml up -d postgres
 
