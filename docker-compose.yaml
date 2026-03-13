@@ -15,12 +15,23 @@ services:
       timeout: 5s
       retries: 5
 
+  migrator:
+    image: ${DOCKER_LOGIN}/sc-auth-migrator:latest
+    container_name: sc-auth-migrator
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      GOOSE_DRIVER: "postgres"
+      GOOSE_DBSTRING: "user=${AUTH_DATABASE_USER} password=${AUTH_DATABASE_PASSWORD} host=postgres dbname=${AUTH_DATABASE_NAME} sslmode=disable"
+    command: goose up -dir ./migrations
+
   app:
     image: ${DOCKER_LOGIN}/scauth:latest
     container_name: sc-auth
     depends_on:
-      postgres:
-        condition: service_healthy
+      migrator:
+        condition: service_completed_successfully
     env_file:
       - $HOME/.env
     ports:

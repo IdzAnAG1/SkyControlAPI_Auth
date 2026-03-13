@@ -9,37 +9,81 @@ permissions:
   contents: read
 
 jobs:
+# Проверка go-кода на написание стилистических и ошибок при компиляции
   golangci:
     name: lint
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
+
       - uses: actions/setup-go@v6
         with:
           go-version: stable
+
       - name: golangci-lint
         uses: golangci/golangci-lint-action@v9
+
         with:
           version: v2.10
+
+# Проверка работы сервиса внутреннеми тестами
   gotest:
     name: test
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
+
       - uses: actions/setup-go@v6
         with:
           go-version: stable
+
       - name: test
         run: go test -v ./...
-  build:
+
+# Запуск Проверки миграций на тестовой бд
+  migrations:
     needs: [golangci, gotest]
+    name: test migrations
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-go@v6
+        with:
+          go-version: stable
+
+      - name: install goose
+        run: go install github.com/pressly/goose/v3/cmd/goose@latest
+
+      - name: validate migrations
+        run: goose -dir=./internal/db/migrations validate
+
+      - name: migrate fix -> optimize labels
+        run: goose -dir=./internal/db/migrations fix
+
+      - name: build migrator container
+        run: docker build -t ${{ secrets.DOCKER_LOGIN }}/sc-auth-migrator:latest . -f ./internal/db/Dockerfile
+
+      - name: docker login
+        run: echo ${{ secrets.DOCKER_AT }} | docker login -u ${{ secrets.DOCKER_LOGIN }} --password-stdin
+
+      - name: docker push
+        run: docker push ${{ secrets.DOCKER_LOGIN }}/sc-auth-migrator:latest
+
+# Сборка проекта в докер контейнер
+  build:
+    needs: [migrations]
     name: building the binary
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
+
       - name: docker build
+
         run: docker build -t ${{ secrets.DOCKER_LOGIN }}/scauth:latest .
+
       - name: docker login
         run: echo ${{ secrets.DOCKER_AT }} | docker login -u ${{ secrets.DOCKER_LOGIN }} --password-stdin
+
       - name: docker push
         run: docker push ${{ secrets.DOCKER_LOGIN }}/scauth:latest
