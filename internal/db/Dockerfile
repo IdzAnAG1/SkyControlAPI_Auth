@@ -6,7 +6,7 @@ FROM --platform=linux/arm64 alpine
 
 COPY --from=build /go/bin/goose /usr/local/bin/goose
 
-COPY ./migrations ./migrations
+COPY ./internal/db/migrations ./migrations
 
 ENV GOOSE_DRIVER=postgres
 
