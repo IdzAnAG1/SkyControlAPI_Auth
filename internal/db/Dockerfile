@@ -4,7 +4,7 @@ RUN GOOS="linux" GOARCH="arm64" CGO_ENABLED=0 go install github.com/pressly/goos
 
 FROM --platform=linux/arm64 alpine
 
-COPY --from=build /go/bin/goose /usr/local/bin/goose
+COPY --from=build /go/bin/linux_arm64/goose /usr/local/bin/goose
 
 COPY ./internal/db/migrations ./migrations
 
