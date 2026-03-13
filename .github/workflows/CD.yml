@@ -25,5 +25,11 @@ jobs:
       - name: Drop oldest container
         run: docker compose -f $HOME/docker-compose.yml down
 
-      - name: Start newest container
-        run: docker compose -f $HOME/docker-compose.yml up -d
+      - name: up postrges container
+        run: docker compose -f $HOME/docker-compose.yml up -d postgres
+
+      - name: up migrator container
+        run: docker compose -f $HOME/docker-compose.yml up migrator
+
+      - name: up app container
+        run: docker compose -f $HOME/docker-compose.yml up -d app
