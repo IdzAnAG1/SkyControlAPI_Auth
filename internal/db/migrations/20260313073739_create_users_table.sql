@@ -2,7 +2,7 @@
 SELECT 'up SQL query';
 
 CREATE TABLE if NOT EXISTS users (
-    id UUID serial PRIMARY KEY,
+    id TEXT PRIMARY KEY NOT NULL,
     username VARCHAR ( 50 ) UNIQUE NOT NULL,
     email VARCHAR ( 255 ) UNIQUE NOT NULL,
     password_hash text NOT NULL,

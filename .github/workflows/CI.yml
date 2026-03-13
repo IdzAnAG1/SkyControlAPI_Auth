@@ -45,6 +45,20 @@ jobs:
     needs: [golangci, gotest]
     name: preparing migrations
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16.1-alpine
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: postgres
+        ports:
+          - 5432:5432
+        options:
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
     steps:
       - uses: actions/checkout@v5
 
@@ -63,6 +77,9 @@ jobs:
 
       - name: build migrator container
         run: docker build -t ${{ secrets.DOCKER_LOGIN }}/sc-auth-migrator:latest . -f ./internal/db/Dockerfile
+
+      - name: test migration
+        run: goose -dir=./internal/db/migrations postgres "${{secrets.DB_STRING_TEST}}" up
 
       - name: docker login
         run: echo ${{ secrets.DOCKER_AT }} | docker login -u ${{ secrets.DOCKER_LOGIN }} --password-stdin
