@@ -75,11 +75,14 @@ jobs:
       - name: migrate fix -> optimize labels
         run: goose -dir=./internal/db/migrations fix
 
+      - name: test migration
+        run: goose -dir=./internal/db/migrations up
+        env:
+          GOOSE_DRIVER: postgres
+          GOOSE_DBSTRING: ${{secrets.DB_STRING_TEST}}
+
       - name: build migrator container
         run: docker build -t ${{ secrets.DOCKER_LOGIN }}/sc-auth-migrator:latest . -f ./internal/db/Dockerfile
-
-      - name: test migration
-        run: goose -dir=./internal/db/migrations postgres "${{secrets.DB_STRING_TEST}}" up
 
       - name: docker login
         run: echo ${{ secrets.DOCKER_AT }} | docker login -u ${{ secrets.DOCKER_LOGIN }} --password-stdin
