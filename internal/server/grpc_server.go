@@ -5,6 +5,7 @@ import (
 	"log/slog"
 	v1 "sc_auth/generated/skycontrol/proto/auth/v1"
 	"sc_auth/internal/db"
+	"sc_auth/internal/domain/handlers"
 )
 
 type GrpcAuthServer struct {
@@ -14,8 +15,7 @@ type GrpcAuthServer struct {
 }
 
 func (gs *GrpcAuthServer) Register(ctx context.Context, req *v1.RegisterRequest) (*v1.RegisterResponse, error) {
-	gs.Logger.Debug("register request received", "request", req)
-	return nil, nil
+	return handlers.RegisterHandler(ctx, req, gs.Logger, *gs.DB.Queries)
 }
 
 func (gs *GrpcAuthServer) Login(ctx context.Context, req *v1.LoginRequest) (*v1.LoginResponse, error) {
