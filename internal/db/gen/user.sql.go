@@ -32,6 +32,41 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) error {
 	return err
 }
 
+const findUserByEmail = `-- name: FindUserByEmail :one
+SELECT EXISTS(SELECT 1 FROM users WHERE email = $1)
+`
+
+func (q *Queries) FindUserByEmail(ctx context.Context, email string) (bool, error) {
+	row := q.db.QueryRow(ctx, findUserByEmail, email)
+	var exists bool
+	err := row.Scan(&exists)
+	return exists, err
+}
+
+const findUserById = `-- name: FindUserById :one
+
+SELECT EXISTS(SELECT 1 FROM users WHERE id = $1)
+`
+
+// - General Queries ---
+func (q *Queries) FindUserById(ctx context.Context, id string) (bool, error) {
+	row := q.db.QueryRow(ctx, findUserById, id)
+	var exists bool
+	err := row.Scan(&exists)
+	return exists, err
+}
+
+const findUserByUsername = `-- name: FindUserByUsername :one
+SELECT EXISTS(SELECT 1 FROM users WHERE username = $1)
+`
+
+func (q *Queries) FindUserByUsername(ctx context.Context, username string) (bool, error) {
+	row := q.db.QueryRow(ctx, findUserByUsername, username)
+	var exists bool
+	err := row.Scan(&exists)
+	return exists, err
+}
+
 const getUserByEmail = `-- name: GetUserByEmail :one
 
 SELECT id, username, email, password_hash, created_at, updated_at, deleted_at FROM users WHERE email = $1
