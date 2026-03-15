@@ -6,3 +6,6 @@ buf_gen:
 
 local:
 	go run cmd/main/main.go
+
+sql_gen:
+	sqlc generate
