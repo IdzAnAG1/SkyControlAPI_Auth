@@ -39,5 +39,5 @@ services:
     ports:
       - ${EXTERNAL_PORT}:${APP_CONTAINER_PORT}
 
-  volumes:
-    postgres_data:
+volumes:
+  postgres_data:
