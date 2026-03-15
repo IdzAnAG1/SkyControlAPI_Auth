@@ -4,11 +4,13 @@ import (
 	"context"
 	"log/slog"
 	v1 "sc_auth/generated/skycontrol/proto/auth/v1"
+	"sc_auth/internal/db"
 )
 
 type GrpcAuthServer struct {
 	v1.UnimplementedAuthServer
 	Logger *slog.Logger
+	DB     *db.DB
 }
 
 func (gs *GrpcAuthServer) Register(ctx context.Context, req *v1.RegisterRequest) (*v1.RegisterResponse, error) {

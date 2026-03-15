@@ -93,6 +93,7 @@ func (app *App) Run() error {
 	// todo
 	authServ := server.GrpcAuthServer{
 		Logger: app.logger,
+		DB:     &app.db,
 	}
 	authv1.RegisterAuthServer(srv, &authServ)
 	app.logger.Info("auth server is registered")

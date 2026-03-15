@@ -3,6 +3,7 @@ package db
 import (
 	"context"
 	"log/slog"
+	db_gen "sc_auth/internal/db/gen"
 	"time"
 
 	"github.com/jackc/pgx/v5"
@@ -11,6 +12,7 @@ import (
 type DB struct {
 	pgUrl   string
 	Conn    *pgx.Conn
+	Queries *db_gen.Queries
 	NoCA    int
 	Timeout int
 	logger  *slog.Logger
@@ -40,6 +42,7 @@ func (db *DB) ConnectWithDB() (err error) {
 		return err
 	}
 	db.logger.Info("connected to db")
+	db.Queries = db_gen.New(db.Conn)
 	return nil
 }
 
