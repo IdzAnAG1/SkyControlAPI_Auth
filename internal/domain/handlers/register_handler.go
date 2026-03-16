@@ -48,11 +48,9 @@ func RegisterHandler(
 		return nil, err
 	}
 
-	resp := &v1.RegisterResponse{
+	return &v1.RegisterResponse{
 		UserId:     user.ID,
 		Token:      "Заглушка пока что",
 		ErrMessage: "",
-	}
-
-	return resp, nil
+	}, nil
 }

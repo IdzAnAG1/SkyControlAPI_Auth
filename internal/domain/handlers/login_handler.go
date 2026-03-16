@@ -31,5 +31,9 @@ func LoginHandler(
 		return &v1.LoginResponse{ErrMessage: "Invalid password"}, nil
 	}
 
-	return &v1.LoginResponse{UserId: user.ID, Token: "token"}, nil
+	return &v1.LoginResponse{
+		UserId:     user.ID,
+		Token:      "token",
+		ErrMessage: "",
+	}, nil
 }
