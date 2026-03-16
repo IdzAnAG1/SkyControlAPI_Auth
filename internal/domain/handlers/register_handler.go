@@ -9,7 +9,12 @@ import (
 	"sc_auth/internal/domain/models"
 )
 
-func RegisterHandler(ctx context.Context, req *v1.RegisterRequest, logger *slog.Logger, db db_gen.Queries) (*v1.RegisterResponse, error) {
+func RegisterHandler(
+	ctx context.Context,
+	req *v1.RegisterRequest,
+	logger *slog.Logger,
+	db db_gen.Queries,
+) (*v1.RegisterResponse, error) {
 	logger.Debug("register request received", "request", req)
 
 	isExists, err := db.FindUserByEmail(ctx, req.Email)
@@ -21,6 +26,7 @@ func RegisterHandler(ctx context.Context, req *v1.RegisterRequest, logger *slog.
 			ErrMessage: "A user with this email address has already been created",
 		}, nil
 	}
+	logger.Debug(" ", "request", req)
 	if isExists, err := db.FindUserByUsername(ctx, req.Username); err != nil {
 		return nil, err
 	} else if isExists {

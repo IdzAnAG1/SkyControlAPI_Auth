@@ -19,6 +19,5 @@ func (gs *GrpcAuthServer) Register(ctx context.Context, req *v1.RegisterRequest)
 }
 
 func (gs *GrpcAuthServer) Login(ctx context.Context, req *v1.LoginRequest) (*v1.LoginResponse, error) {
-	gs.Logger.Debug("login request received", "request", req)
-	return nil, nil
+	return handlers.LoginHandler(ctx, req, gs.Logger, *gs.DB.Queries)
 }
