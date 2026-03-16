@@ -39,9 +39,28 @@ jobs:
       - name: test
         run: go test -v ./...
 
+  migrations_check:
+    outputs:
+      is_changed: ${{ steps.write_result.outputs.is_changed }}
+    needs: [golangci, gotest]
+    name: check migrations
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - id: write_result
+        run : |
+          if git diff --name-only HEAD^ HEAD | grep -q 'internal/db/migrations'; then
+            echo "is_changed=true" >> $GITHUB_OUTPUT
+          else 
+            echo "is_changed=false" >> $GITHUB_OUTPUT
+          fi
+          
+        
+
 # Запуск Проверки миграций на тестовой бд
   migrations:
-    needs: [golangci, gotest]
+    if: needs.migrations_check.outputs.is_changed == 'true'
+    needs: [migrations_check]
     name: preparing migrations
     runs-on: ubuntu-latest
     services:
@@ -91,6 +110,7 @@ jobs:
 
 # Сборка проекта в докер контейнер
   build:
+    if: needs.migrations.result == 'success' || needs.migrations.result == 'skipped'
     needs: [migrations]
     name: building the binary
     runs-on: ubuntu-latest
