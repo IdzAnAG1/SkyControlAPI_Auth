@@ -113,7 +113,7 @@ jobs:
 
 # Сборка проекта в докер контейнер
   build:
-    if: needs.migrations.result == 'success' || needs.migrations.result == 'skipped'
+    if: always() && (needs.migrations.result == 'success' || needs.migrations.result == 'skipped')
     needs: [migrations]
     name: building the binary
     runs-on: ubuntu-latest
